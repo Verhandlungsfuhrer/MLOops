@@ -1,15 +1,19 @@
-import pandas as pd
 import pickle
-from .constants import NON_FRAUD_NAME, IS_FRAUD_LABEL, IS_FRAUD_NAME
+
+import pandas as pd
+
+from .constants import IS_FRAUD_LABEL, IS_FRAUD_NAME, NON_FRAUD_NAME
+from .data_model import PredictionRow
 
 
 class PredictionModel:
 
-    def __init__(self, path_to_file):
+    def __init__(self, path_to_file: str) -> None:
         with open(path_to_file, "rb") as f:
             self.model = pickle.load(f)
 
-    def predict(self, prediction_row):
+    def predict(self, data_model: PredictionRow) -> str:
+        prediction_row = data_model.dict()
         series = pd.Series(prediction_row)
         df = pd.DataFrame(data=[series])
         prediction = self.model.predict(df)
