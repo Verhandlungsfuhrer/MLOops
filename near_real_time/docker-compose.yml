@@ -8,7 +8,7 @@ services:
     environment:
       - KRAFT_CONTAINER_HOST_NAME=kafka
       - KRAFT_CREATE_TOPICS=mltopic
-      - KRAFT_PARTITIONS_PER_TOPIC=3
+      - KRAFT_PARTITIONS_PER_TOPIC=1
 
   ui:
     image: provectuslabs/kafka-ui:v0.4.0
@@ -17,3 +17,10 @@ services:
     environment:
       - KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS=kafka:9092
       - KAFKA_CLUSTERS_0_NAME=mlcluster
+
+  producer:
+    image: demo_producer
+    build: ./kafka_prod
+    restart: always
+    environment:
+      - KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS=kafka:9093
