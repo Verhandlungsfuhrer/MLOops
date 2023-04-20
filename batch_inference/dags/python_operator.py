@@ -1,16 +1,16 @@
-import random
+
 from datetime import timedelta
-from pathlib import Path
 
-import pandas as pd
 from airflow import DAG
-from airflow.operators.python import PythonOperator
+from airflow.operators.python import PythonVirtualenvOperator
 from airflow.utils.dates import days_ago
-
-from src.data_model import PredictionRow
 
 
 def generate_data(input_dir):
+    import random
+    import pandas as pd
+    from src.data_model import PredictionRow
+    from pathlib import Path
 
     input_dir_path = Path(input_dir)
     input_dir_path.mkdir(parents=True, exist_ok=True)
@@ -40,4 +40,9 @@ default_args = {
     "retry_delay": timedelta(minutes=5),
 }
 with DAG(default_args=default_args, schedule_interval="@daily", dag_id="python_operator", start_date=days_ago(1)):
-    po = PythonOperator(python_callable=generate_data, op_args=["{{ds}}"], task_id="generate_data")
+    po = PythonVirtualenvOperator(
+        python_callable=generate_data,
+        op_args=["{{ds}}"],
+        task_id="generate_data",
+        requirements=["pandas", "pydantic"]
+    )

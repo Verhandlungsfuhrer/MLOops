@@ -15,7 +15,7 @@ default_args = {
 with DAG(
     "dummy",
     default_args=default_args,
-    schedule_interval="@daily",
-    start_date=days_ago(7),
+    schedule_interval="0 * * * *",
+    start_date=days_ago(1),
 ) as dag:
     operator = EmptyOperator(task_id="empty_task")

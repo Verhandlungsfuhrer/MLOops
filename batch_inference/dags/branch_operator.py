@@ -2,6 +2,7 @@ import random
 from datetime import timedelta
 
 from airflow import DAG
+from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import BranchPythonOperator, PythonOperator
 from airflow.utils.dates import days_ago
 
@@ -36,4 +37,7 @@ with DAG(default_args=default_args, schedule_interval="@daily", dag_id="branchin
     branch = BranchPythonOperator(python_callable=branch_operator, task_id="branch")
     first_op = PythonOperator(python_callable=first_task, task_id=FIRST_TASK_ID)
     second_op = PythonOperator(python_callable=zero_task, task_id=ZERO_TASK_ID)
-    branch >> [first_op, second_op]
+    third_op = EmptyOperator(task_id="third")
+    forth_op = EmptyOperator(task_id="forth")
+    branch >> [first_op, second_op] >> third_op
+    [first_op, second_op] >> forth_op
