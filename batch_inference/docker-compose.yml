@@ -1,0 +1,38 @@
+version: '3.7'
+# ====================================== AIRFLOW ENVIRONMENT VARIABLES =======================================
+x-environment: &minio_environment
+  - MINIO_ROOT_USER=miniouser
+  - MINIO_ROOT_PASSWORD=miniouser
+  - AWS_ACCESS_KEY_ID=miniouser
+  - AWS_SECRET_ACCESS_KEY=miniouser
+
+# ====================================== /AIRFLOW ENVIRONMENT VARIABLES ======================================
+services:
+
+  minio:
+    restart: always
+    image: minio/minio@sha256:c8b96517bdf9e133ae722ae4ad25045743087c1ff5098eff3a397a97f845fbf9
+    container_name: mlflow_s3
+    ports:
+        - "9002:9000"
+        - "9003:9001"
+    command: server /raw_data --console-address ':9001' --address ':9000'
+    environment: *minio_environment
+    volumes:
+        - ./minio_data:/data
+
+  mc:
+    image: minio/mc@sha256:6ffd76764e8ca484de12c6ecaa352db3d8efd5c9d44f393718b29b6600e0a559
+    depends_on:
+        - minio
+    container_name: mc
+    environment: *minio_environment
+    entrypoint: >
+        /bin/sh -c "
+        /usr/bin/mc alias set minio http://minio:9000 ${AWS_ACCESS_KEY_ID} ${AWS_SECRET_ACCESS_KEY} &&
+        /usr/bin/mc mb minio/data;
+        exit 0;
+        "
+    volumes:
+        - ./wait-for-it.sh:/tmp/wait-for-it.sh
+
