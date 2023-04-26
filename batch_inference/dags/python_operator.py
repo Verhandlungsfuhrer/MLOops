@@ -39,7 +39,8 @@ default_args = {
     "retries": 1,
     "retry_delay": timedelta(minutes=5),
 }
-with DAG(default_args=default_args, schedule_interval="@daily", dag_id="python_operator", start_date=days_ago(1)):
+with DAG(default_args=default_args, schedule_interval="@daily",
+         dag_id="python_operator", start_date=days_ago(1)):
     po = PythonVirtualenvOperator(
         python_callable=generate_data,
         op_args=["{{ds}}"],

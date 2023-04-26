@@ -3,6 +3,8 @@ from datetime import timedelta
 from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.utils.dates import days_ago
+from airflow.sensors.filesystem import FileSensor
+
 
 default_args = {
     "owner": "imd",
@@ -26,8 +28,9 @@ with DAG(
         task_id="get_data",
         bash_command="wget https://data.cdc.gov/api/views/yni7-er2q/rows.csv -O ../{{ds}}/data.csv"
     )
+    wait_file = FileSensor(task_id="wait", filepath="../{{ds}}/data.csv")
     get_wc = BashOperator(
         task_id="calculate_word_count",
         bash_command="wc ../{{ds}}/data.csv >> ../{{ds}}/wc.txt"
     )
-    make_dir >> get_csv >> get_wc
+    make_dir >> get_csv >> wait_file >> get_wc
