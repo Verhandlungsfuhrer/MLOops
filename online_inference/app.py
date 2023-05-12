@@ -16,6 +16,11 @@ def predict_function(data_model: PredictionRow) -> Dict[str, str]:
     return {"prediction": predict}
 
 
+@app.get("/")
+def health():
+    return "Server is working"
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, port=8090)
