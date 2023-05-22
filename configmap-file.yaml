@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: file-config
+  labels:
+    app: online-inference
+data:
+  config.yaml: |
+    key1: 184
+    key2: 185
+  another.yaml: |
+    another entry

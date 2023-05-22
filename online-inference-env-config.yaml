@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fastapi-ml-config-map-env
+  labels:
+    app: fastapi-ml
+spec:
+  containers:
+    - image: imdxd/online_inference:latest
+      name: online-inference-ml
+      ports:
+        - containerPort: 8090
+      envFrom:
+        - prefix: CONFIG_
+          configMapRef:
+            name: name-config

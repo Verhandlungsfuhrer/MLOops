@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: onlineinf-ml
+  labels:
+    app: onlineinf-ml
+spec:
+  replicas: 8
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 4
+      maxUnavailable: 2
+  selector:
+    matchLabels:
+      app: onlineinf-ml
+  template:
+    metadata:
+      name: onlineinf-ml
+      labels:
+        app: onlineinf-ml
+    spec:
+      containers:
+        - image: imdxd/online_inference:latest
+          name: onlineinf-ml
+          ports:
+            - containerPort: 8090
+            - containerPort: 8070

@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: online-inference-replica
+  labels:
+    app: online-ml
+spec:
+  replicas: 9
+  selector:
+    matchLabels:
+      app: online-ml
+  template:
+    metadata:
+      name: online-ml
+      labels:
+        app: online-ml
+    spec:
+      containers:
+        - image: imdxd/online_inference:latest
+          name: online-inference-ml
+          ports:
+            - containerPort: 8090
