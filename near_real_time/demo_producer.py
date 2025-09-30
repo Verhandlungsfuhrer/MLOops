@@ -17,8 +17,17 @@ while True:
     newbalanceOrig = random.randint(0, 1_000_000)
     oldbalanceDest = random.randint(0, 1_000_000)
     newbalanceDest = random.randint(0, 1_000_000)
-    pred_row = PredictionRow(type=choosen_type, amount=choosen_amount, oldbalanceOrg=oldbalanceOrg,
-                             newbalanceOrig=newbalanceOrig, oldbalanceDest=oldbalanceDest,
-                             newbalanceDest=newbalanceDest)
-    producer.send("mltopic", key=str(uuid.uuid4()).encode("utf8"), value=pred_row.json().encode("utf8"))
+    pred_row = PredictionRow(
+        type=choosen_type,
+        amount=choosen_amount,
+        oldbalanceOrg=oldbalanceOrg,
+        newbalanceOrig=newbalanceOrig,
+        oldbalanceDest=oldbalanceDest,
+        newbalanceDest=newbalanceDest,
+    )
+    producer.send(
+        "mltopic",
+        key=str(uuid.uuid4()).encode("utf8"),
+        value=pred_row.json().encode("utf8"),
+    )
     time.sleep(5)

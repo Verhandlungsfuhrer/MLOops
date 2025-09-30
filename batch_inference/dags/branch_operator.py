@@ -9,8 +9,8 @@ from airflow.utils.dates import days_ago
 default_args = {
     "owner": "imd",
     "email": ["imdxdd@gmail.com"],
-    'email_on_failure': True,
-    'email_on_retry': True,
+    "email_on_failure": True,
+    "email_on_retry": True,
     "retries": 1,
     "retry_delay": timedelta(minutes=5),
 }
@@ -33,8 +33,12 @@ def zero_task():
     print(0)
 
 
-with DAG(default_args=default_args, schedule_interval="@daily",
-         dag_id="branching", start_date=days_ago(1)):
+with DAG(
+    default_args=default_args,
+    schedule_interval="@daily",
+    dag_id="branching",
+    start_date=days_ago(1),
+):
     branch = BranchPythonOperator(python_callable=branch_operator, task_id="branch")
     first_op = PythonOperator(python_callable=first_task, task_id=FIRST_TASK_ID)
     second_op = PythonOperator(python_callable=zero_task, task_id=ZERO_TASK_ID)

@@ -9,5 +9,9 @@ file_path = f"{RAW_DATA_FOLDER}/{current_date}.csv"
 file_size = os.path.getsize(file_path)
 
 
-client = Minio("localhost:9002", access_key="miniouser", secret_key="miniouser", secure=False)
-client.put_object("data", f"{current_date}.csv", data=open(file_path, "rb"), length=file_size)
+client = Minio(
+    "localhost:9002", access_key="miniouser", secret_key="miniouser", secure=False
+)
+client.put_object(
+    "data", f"{current_date}.csv", data=open(file_path, "rb"), length=file_size
+)

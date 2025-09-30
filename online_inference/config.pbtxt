@@ -1,0 +1,23 @@
+name: "image_clf"
+platform: "onnxruntime_onnx"
+max_batch_size: 32
+input [
+  {
+    name: "image"
+    data_type: TYPE_FP32
+    dims: [ 3, 224, 224 ]
+  }
+]
+output [
+  {
+    name: "label"
+    data_type: TYPE_FP32
+    dims: [ 1000 ]
+  }
+]
+instance_group [
+  {
+    count: 2
+    kind: KIND_CPU
+  }
+]

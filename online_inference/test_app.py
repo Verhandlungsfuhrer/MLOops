@@ -12,7 +12,7 @@ TEST_ROW = PredictionRow(
     oldbalanceOrg=200,
     newbalanceOrig=0,
     oldbalanceDest=0,
-    newbalanceDest=200
+    newbalanceDest=200,
 )
 
 
@@ -31,5 +31,5 @@ def test_validation_type_error():
             oldbalanceOrg=200,
             newbalanceOrig=0,
             oldbalanceDest=0,
-            newbalanceDest=200
+            newbalanceDest=200,
         )

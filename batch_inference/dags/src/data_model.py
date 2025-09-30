@@ -13,9 +13,13 @@ class PredictionRow(BaseModel):
     def validate_type(cls, v: str) -> str:
         if v in ["PAYMENT", "TRANSFER", "CASH_OUT", "DEBIT", "CASH_IN"]:
             return v
-        raise ValueError("type must be in 'PAYMENT' 'TRANSFER' 'CASH_OUT' 'DEBIT' 'CASH_IN'")
+        raise ValueError(
+            "type must be in 'PAYMENT' 'TRANSFER' 'CASH_OUT' 'DEBIT' 'CASH_IN'"
+        )
 
-    @validator("amount", "oldbalanceOrg", "newbalanceOrig", "oldbalanceDest", "newbalanceDest")
+    @validator(
+        "amount", "oldbalanceOrg", "newbalanceOrig", "oldbalanceDest", "newbalanceDest"
+    )
     def validate_moneys(cls, v: float) -> float:
         if v >= 0:
             return v
