@@ -1,7 +1,5 @@
 import torch
-
 from torchvision.models import resnet18
-
 
 torch_model = resnet18(pretrained=True)
 # Create example inputs for exporting the model. The inputs should be a tuple of tensors.
@@ -13,6 +11,6 @@ onnx_program = torch.onnx.export(
     input_names=["image"],
     output_names=["label"],
     dynamo=True,
-    dynamic_axes={"image": {0: "batch"}}
+    dynamic_axes={"image": {0: "batch"}},
 )
 onnx_program.save("model.onnx")

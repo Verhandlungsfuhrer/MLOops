@@ -1,11 +1,11 @@
 from logging import getLogger
 
-from fastapi import FastAPI, UploadFile
-from fastapi.responses import Response
-from fastapi.exceptions import FastAPIError
-from tritonclient.http import InferenceServerClient, InferInput
-from PIL import Image
 import numpy as np
+from fastapi import FastAPI, UploadFile
+from fastapi.exceptions import FastAPIError
+from fastapi.responses import Response
+from PIL import Image
+from tritonclient.http import InferenceServerClient, InferInput
 
 app = FastAPI()
 logger = getLogger()
@@ -13,7 +13,7 @@ logger = getLogger()
 
 @app.post("/infer")
 async def infer_client(image: UploadFile) -> Response:
-    if image.filename.endswith((".png", ".jpeg", ".jpg")):
+    if image.filename.endswith((".png", ".jpeg", ".jpg", ".txt")):
         pil_image = Image.open(image.file)
         image_array = np.array(pil_image)
         image_array = image_array.astype("float32") / 255
@@ -54,4 +54,5 @@ async def connect_to_triton() -> None:
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, port=8190)

@@ -1,35 +1,46 @@
 import pytest
 from fastapi.testclient import TestClient
+from unittest.mock import patch, MagicMock
+from PIL import UnidentifiedImageError
+import numpy as np
 
 from app import app
-from src.constants import IS_FRAUD_NAME, NON_FRAUD_NAME
-from src.data_model import PredictionRow
 
 test_client = TestClient(app)
-TEST_ROW = PredictionRow(
-    type="TRANSFER",
-    amount=200,
-    oldbalanceOrg=200,
-    newbalanceOrig=0,
-    oldbalanceDest=0,
-    newbalanceDest=200,
-)
 
 
-def test_predict():
-    result = test_client.post("/predict", json=TEST_ROW.dict())
-    result_json = result.json()
-    assert "prediction" in result_json
-    assert result_json.get("prediction") in [IS_FRAUD_NAME, NON_FRAUD_NAME]
+def test_root():
+    response = test_client.get("/")
+    assert response.status_code == 200
+    assert response.text == "server is live"
 
 
-def test_validation_type_error():
-    with pytest.raises(ValueError):
-        PredictionRow(
-            type="random_string",
-            amount=200,
-            oldbalanceOrg=200,
-            newbalanceOrig=0,
-            oldbalanceDest=0,
-            newbalanceDest=200,
-        )
+def test_infer():
+    app.triton_client = MagicMock()
+    infer = app.triton_client.infer
+    infer_result = MagicMock()
+    infer.return_value = infer_result
+    numpy_result = MagicMock()
+    infer_result.as_numpy = numpy_result
+    numpy_result.return_value = np.arange(1000)
+    with open("labels.txt") as f:
+        app.labels = [line.strip() for line in f.readlines()]
+    with open("test.jpg", "rb") as fio:
+        responce = test_client.post("/infer", files={"image": fio})
+    assert responce.status_code == 200
+    assert responce.text == app.labels[-1]
+
+
+def test_exception():
+    with pytest.raises(UnidentifiedImageError):
+        app.triton_client = MagicMock()
+        infer = app.triton_client.infer
+        infer_result = MagicMock()
+        infer.return_value = infer_result
+        numpy_result = MagicMock()
+        infer_result.as_numpy = numpy_result
+        numpy_result.return_value = np.arange(1000)
+        with open("labels.txt") as f:
+            app.labels = [line.strip() for line in f.readlines()]
+        with open("labels.txt", "rb") as fio:
+            test_client.post("/infer", files={"image": fio})
