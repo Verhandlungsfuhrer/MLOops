@@ -14,23 +14,13 @@ logger = getLogger()
 @app.post("/infer")
 async def infer_client(image: UploadFile) -> Response:
     if image.filename.endswith((".png", ".jpeg", ".jpg", ".txt")):
-        pil_image = Image.open(image.file)
+        pil_image = Image.open(image.file).convert(mode="RGB")
         image_array = np.array(pil_image)
-        image_array = image_array.astype("float32") / 255
-        image_array = (image_array - 0.5) / 0.5
-        if len(image_array.shape) != 3:
-            return Response("Expect color image", status_code=400)
-        elif image_array.shape[-1] != 3:
-            return Response("Expect color image without alpha chanel", status_code=400)
-        elif image_array.shape[0] != 224:
-            return Response("Expect height of image equal 224", status_code=400)
-        elif image_array.shape[1] != 224:
-            return Response("Expect width of image equal 224", status_code=400)
-        image_array = image_array.transpose(2, 0, 1)[None, ...]
-        inp = InferInput("image", [1, 3, 224, 224], "FP32")
+        image_array = image_array[None, ...]
+        inp = InferInput("RAW_IMAGE", image_array.shape, "UINT8")
         inp.set_data_from_numpy(image_array)
-        out = app.triton_client.infer("image_clf", inputs=[inp])
-        result = out.as_numpy("label")
+        out = app.triton_client.infer("ensemble", inputs=[inp])
+        result = out.as_numpy("LABEL")
         logger.info(result.argmax())
         return Response(app.labels[result.argmax()], status_code=200)
     else:

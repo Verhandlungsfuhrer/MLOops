@@ -10,7 +10,7 @@ onnx_program = torch.onnx.export(
     example_inputs,
     input_names=["image"],
     output_names=["label"],
+    dynamic_shapes=[{0, "batch_size"}],
     dynamo=True,
-    dynamic_axes={"image": {0: "batch"}},
 )
 onnx_program.save("model.onnx")
